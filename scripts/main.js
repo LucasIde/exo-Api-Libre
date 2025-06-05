@@ -3,20 +3,27 @@
 // ==============================
 
 const wrapper = document.querySelector(".wrapper");
+const button_month = document.querySelector(".button_month");
+const exitDetails = document.querySelector(".exitDetails");
+const dateInput = document.querySelector(`[type="month"]`);
+const datebtn = document.querySelector(".send");
 
 // ==============================
 // 🌍 Variables globales
 // ==============================
 
 let calendar = [];
+let date = new Date();
+const today = new Date();
+
 
 // ==============================
 // 🎊 Fonctionnalités
 // ==============================
 
-async function getpicture() {
+async function getpicture(start_date, end_date) {
 	try {
-		const response = await fetch(`https://api.nasa.gov/planetary/apod?start_date=2025-05-01&end_date=2025-05-31&api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
+		const response = await fetch(`https://api.nasa.gov/planetary/apod?start_date=${start_date}&end_date=${end_date}&api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
 	    const data = await response.json();
 		console.log(data);
 		return (data);
@@ -51,8 +58,29 @@ function printDailyPic(data) {
     });
 }
 
+function checkDate() {
+    if (today.getFullYear() == date.getFullYear() && today.getMonth() == date.getMonth()) {
+        return (today.getDay() +1);
+    }
+    return (getNbDay(date.getFullYear(), (date.getMonth() + 1)));
+}
+
+function createdate(start){
+    let tmpDate = [];
+    tmpDate.push(date.getFullYear());
+    tmpDate.push((date.getMonth() + 1));
+    if (start) {
+        tmpDate.push(1);
+    }
+    else {
+
+        tmpDate.push(checkDate());
+    }
+    return (tmpDate.join("-"));
+}
+
 async function init() {
-    const data = await getpicture();
+    const data = await getpicture(createdate(1), createdate(0));
     calendar = data;
     printDailyPic(data);
 }
@@ -81,16 +109,80 @@ function createDetails(id) {
     };
 }
 
+function checkMaxDate(year, month) {
+    if (year > today.getFullYear() || year < 1996) {
+        return (0);
+    }
+    else if (year == today.getFullYear() && Number(month) > (today.getMonth() + 1)) {
+        return (0);
+    }
+    else {
+        return (1);
+    }
+}
+
+function formatMonthInput(month) {
+    return (month < 10) ? ("0" + month) : month;
+}
+
 // ==============================
 // 🧲 Événements
 // ==============================
-// init()
-// getpicture()
+init()
 // console.log(getNbDay(2025, 2));
+// const tmpDate = new Date(date.valueOf());
+// tmpDate.setMonth(0);
+// console.log(tmpDate);
+// console.log(date);
+
+
+datebtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const dateUser = dateInput.value.split("-")
+    if (checkMaxDate(dateUser[0], dateUser[1])) {
+        date.setMonth((Number(dateUser[1]) - 1))
+        date.setFullYear(dateUser[0])
+        init();
+    }
+})
 
 wrapper.addEventListener("click", (e) => {
     const target = e.target.closest(".picture");
     if (target) {
         createDetails(target.dataset.id);
+    }
+})
+
+button_month.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (e.target.matches("button")) {
+        const tmpDate = new Date(date.valueOf());
+        switch (e.target.className) {
+            case("previous") : {
+                tmpDate.setMonth(tmpDate.getMonth() - 1);
+                if (checkMaxDate(tmpDate.getFullYear(), tmpDate.getMonth() - 1)) {
+                    date = tmpDate;
+                    dateInput.value = `${tmpDate.getFullYear()}-${formatMonthInput(tmpDate.getMonth() + 1)}`
+                    init();
+                }
+                break;
+            }
+            case("next") : {
+                tmpDate.setMonth(tmpDate.getMonth() + 1);
+                if (checkMaxDate(tmpDate.getFullYear(), tmpDate.getMonth() + 1)) {
+                    date = tmpDate;
+                    dateInput.value = `${tmpDate.getFullYear()}-${formatMonthInput(tmpDate.getMonth() + 1)}`
+                    init();
+                }
+                break;
+            }
+        }
+    }
+})
+
+exitDetails.addEventListener("click", () => {
+    const targetdetails = document.querySelector(".details");
+    if (targetdetails) {
+        targetdetails.outerHTML = "";
     }
 })
