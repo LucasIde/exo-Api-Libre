@@ -149,7 +149,7 @@ function formatMonthInput(month) {
 // 🧲 Événements
 // ==============================
 
-// init()
+init()
 
 datebtn.addEventListener("click", (e) => {
     e.preventDefault();
