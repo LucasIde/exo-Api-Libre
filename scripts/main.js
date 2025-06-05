@@ -7,6 +7,8 @@ const button_month = document.querySelector(".button_month");
 const exitDetails = document.querySelector(".exitDetails");
 const dateInput = document.querySelector(`[type="month"]`);
 const datebtn = document.querySelector(".send");
+const EarthHTML = document.querySelector(".earth");
+const load = document.querySelector(".loading");
 
 // ==============================
 // 🌍 Variables globales
@@ -23,9 +25,11 @@ const today = new Date();
 
 async function getpicture(start_date, end_date) {
 	try {
+        load.classList.remove("hidden");
 		const response = await fetch(`https://api.nasa.gov/planetary/apod?start_date=${start_date}&end_date=${end_date}&api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
 	    const data = await response.json();
 		console.log(data);
+        load.classList.add("hidden");
 		return (data);
 	}
 	catch (error) {
@@ -33,14 +37,11 @@ async function getpicture(start_date, end_date) {
     }
 }
 
-async function getEarth(year, month, day) {
+async function getEarth(date) {
 	try {
-		const response = await fetch(`https://api.nasa.gov/EPIC/api/natural/date/2019-05-30?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
+		const response = await fetch(`https://api.nasa.gov/EPIC/api/natural/date/${date}?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
 	    let data = await response.json();
 		console.log(data);
-		// const responseImg = await fetch(`https://api.nasa.gov/EPIC/archive/natural/2019-05-30/png/${data[0].image}.png?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
-	    // data = await responseImg.json();
-		// console.log(data);
 		return (data);
 	}
 	catch (error) {
@@ -58,7 +59,6 @@ function printDailyPic(data) {
     data.forEach((element, index) => {
         const div = document.createElement("div");
         div.classList.add("picture");
-        div.classList.add(element.date); // surement useless
         div.dataset.id = index;
         if (element.media_type === "image"){
             div.innerHTML = `
@@ -102,6 +102,7 @@ async function init() {
 }
 
 function createDetails(id) {
+    load.classList.remove("hidden");
     const pic = calendar[id];
     const div = document.createElement("div");
     div.classList.add("details");
@@ -125,6 +126,7 @@ function createDetails(id) {
         </div>
         `
         wrapper.append(div);
+        load.classList.add("hidden");
     };
     exitDetails.disabled = false;
 }
@@ -145,11 +147,24 @@ function formatMonthInput(month) {
     return (month < 10) ? ("0" + month) : month;
 }
 
+async function createEarth() {
+    const tmpDate = new Date();
+    tmpDate.setDate(tmpDate.getDate() - 4);
+    const dateEarth = `${tmpDate.getFullYear()}-${formatMonthInput(tmpDate.getMonth() + 1)}-${formatMonthInput(tmpDate.getDate() + 1)}`
+    const dateEarthImg = `${tmpDate.getFullYear()}/${formatMonthInput(tmpDate.getMonth() + 1)}/${formatMonthInput(tmpDate.getDate() + 1)}`
+    console.log(dateEarth);
+    const data = await getEarth(dateEarth);
+    const img = new Image();
+    img.src = `https://api.nasa.gov/EPIC/archive/natural/${dateEarthImg}/png/${data[0].image}.png?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`;
+    EarthHTML.append(img);
+}
+
 // ==============================
 // 🧲 Événements
 // ==============================
 
 init()
+createEarth();
 
 datebtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -202,5 +217,3 @@ exitDetails.addEventListener("click", () => {
         exitDetails.disabled = true;
     }
 })
-
-getEarth()

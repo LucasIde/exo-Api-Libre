@@ -53,7 +53,45 @@ main {
     .txt {
         margin: 1rem;
     }
+    .img {
+        margin: 1rem;
+    }
 
+}
+
+
+.loading{
+    color: #fff;
+    position: absolute;
+    top: 35%;
+    left: 6%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+    gap: 1rem ;
+    font-size: 2rem;
+    img{
+        width: 4rem;
+        aspect-ratio: 1/1;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes rotateInfinitely {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotateInfinitely 2s linear infinite;
 }
 
 .details__header {
@@ -130,3 +168,7 @@ main {
     z-index: -1;
 }
 
+.earth {
+    position: absolute;
+    bottom: -2rem;
+}
