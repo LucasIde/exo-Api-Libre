@@ -81,16 +81,31 @@ main {
 }
 
 .pannel{
-    margin: 0 auto;
+    position: relative;
+    width: 100%;
+    .wrapperPannel {
+        margin: 0 auto;
+        width: 70%;
+    }
     button {
         border: solid 1px #000;
         padding: .2rem 1rem;
         background-color: #856767;
+        box-shadow: 0 3px #85676760;
+    }
+    button:active {
+        translate: 0 2px;
+        box-shadow: 0 0;
+    }
+    button:disabled {
+        translate: 0 2px;
+        box-shadow: 0 0;
+        opacity: .7;
     }
     &__datePicker {
         margin: 2rem 0;
         [type="month"] {
-            padding: .2rem 2rem;
+            flex: 1;
         }
         & > * {
             display: flex;
@@ -102,3 +117,16 @@ main {
         width: 100%;
     }
 }
+
+.pannel::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    top: -2rem;
+    bottom: -2rem;
+    left: 0;
+    background-color: #111;
+    border-right: solid 2px #000;
+    z-index: -1;
+}
+

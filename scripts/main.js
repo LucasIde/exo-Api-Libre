@@ -33,6 +33,21 @@ async function getpicture(start_date, end_date) {
     }
 }
 
+async function getEarth(year, month, day) {
+	try {
+		const response = await fetch(`https://api.nasa.gov/EPIC/api/natural/date/2019-05-30?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
+	    let data = await response.json();
+		console.log(data);
+		// const responseImg = await fetch(`https://api.nasa.gov/EPIC/archive/natural/2019-05-30/png/${data[0].image}.png?api_key=fkQZ88kw2aUH6J1bC6cQgXjvm9OPlAPMaTEdnwbs`);
+	    // data = await responseImg.json();
+		// console.log(data);
+		return (data);
+	}
+	catch (error) {
+        console.error('Erreur :', error);
+    }
+}
+
 function getNbDay(year, month) {
     const dayInMonth = new Date(year, month, 0).getDate();
     return (dayInMonth);
@@ -82,6 +97,7 @@ function createdate(start){
 async function init() {
     const data = await getpicture(createdate(1), createdate(0));
     calendar = data;
+    exitDetails.disabled = true;
     printDailyPic(data);
 }
 
@@ -95,8 +111,11 @@ function createDetails(id) {
     img.onload = () => {
         orientation = (img.width > img.height) ? "horizontal" : "vertical";
         div.classList.add(orientation);
-        div.innerHTML = `
-        <div class="img"><img src="${pic.hdurl}" alt=""></div>
+        const divImg = document.createElement("div");
+        divImg.classList.add("img");
+        divImg.append(img);
+        div.append(divImg);
+        div.innerHTML += `
         <div class="txt">
         <div class="details__header">
         <div class="title">${pic.title}</div>
@@ -107,6 +126,7 @@ function createDetails(id) {
         `
         wrapper.append(div);
     };
+    exitDetails.disabled = false;
 }
 
 function checkMaxDate(year, month) {
@@ -128,13 +148,8 @@ function formatMonthInput(month) {
 // ==============================
 // 🧲 Événements
 // ==============================
-init()
-// console.log(getNbDay(2025, 2));
-// const tmpDate = new Date(date.valueOf());
-// tmpDate.setMonth(0);
-// console.log(tmpDate);
-// console.log(date);
 
+// init()
 
 datebtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -184,5 +199,8 @@ exitDetails.addEventListener("click", () => {
     const targetdetails = document.querySelector(".details");
     if (targetdetails) {
         targetdetails.outerHTML = "";
+        exitDetails.disabled = true;
     }
 })
+
+getEarth()
