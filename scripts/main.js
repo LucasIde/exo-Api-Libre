@@ -126,6 +126,9 @@ function createDetails(id) {
         </div>
         `
         wrapper.append(div);
+        setTimeout(() => {
+            document.querySelector(".details").classList.add("active");
+        }, 100);
         load.classList.add("hidden");
     };
     exitDetails.disabled = false;
@@ -163,7 +166,7 @@ async function createEarth() {
 // 🧲 Événements
 // ==============================
 
-init()
+init();
 createEarth();
 
 datebtn.addEventListener("click", (e) => {
